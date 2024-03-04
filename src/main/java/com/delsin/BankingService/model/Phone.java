@@ -1,0 +1,23 @@
+package com.delsin.BankingService.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Entity
+@Data
+public class Phone {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String phone;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public Phone(String phone, User user) {
+        this.phone = phone;
+        this.user = user;
+    }
+}
