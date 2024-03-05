@@ -1,4 +1,4 @@
-package com.delsin.BankingService.config;
+package com.delsin.BankingService.security;
 
 import com.delsin.BankingService.model.User;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,6 +1,6 @@
 package com.delsin.BankingService.service.impl;
 
-import com.delsin.BankingService.config.MyUserDetails;
+import com.delsin.BankingService.security.MyUserDetails;
 import com.delsin.BankingService.model.User;
 import com.delsin.BankingService.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
