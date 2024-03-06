@@ -47,7 +47,8 @@ public class InternalAccountServiceImpl implements InternalAccountService {
 
             Account account = Account.builder()
                     .user(newUser)
-                    .balance(user.getBalance())
+                    .downPayment(user.getDownPayment())
+                    .balance(user.getDownPayment())
                     .build();
 
             userRepository.save(newUser);

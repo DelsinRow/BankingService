@@ -10,14 +10,11 @@ import com.delsin.BankingService.security.MyUserDetails;
 import com.delsin.BankingService.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -29,7 +26,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addEmail(MyUserDetails userDetails, String email) {
         User user = currentUser(userDetails);
-        if(checkEmailUniq(email)){
+        if(isEmailUniq(email)){
             throw new IllegalStateException("This email is already taken: " + email);
         } else {
             user.getEmails().add(new Email(email, user));
@@ -40,7 +37,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateEmail(MyUserDetails userDetails, String emailToReplace, String newEmail) {
         User user = currentUser(userDetails);
-        if(checkEmailUniq(newEmail)){
+        if(isEmailUniq(newEmail)){
             throw new IllegalStateException("This email is already taken: " + newEmail);
         } else {
             List<Email> updatedEmails = user.getEmails().stream()
@@ -53,18 +50,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteEmail(MyUserDetails userDetails, String email) {
         User user = currentUser(userDetails);
-        Email emailToRemove = user.getEmails().stream()
-                .filter(e -> e.getEmail().equals(email))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Email not found: " + email));
-        user.getEmails().remove(emailToRemove);
-        userRepository.save(user);
+        if (user.getEmails().size() == 1 ){
+            throw new IllegalStateException("You can't delete the last email.");
+        } else {
+            Email emailToRemove = user.getEmails().stream()
+                    .filter(e -> e.getEmail().equals(email))
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("Email not found: " + email));
+            user.getEmails().remove(emailToRemove);
+            userRepository.save(user);
+        }
     }
 
     @Override
     public void addPhone(MyUserDetails userDetails, String phone) {
         User user = currentUser(userDetails);
-        if(checkPhoneUniq(phone)){
+        if(isPhoneUniq(phone)){
             throw new IllegalStateException("This phone is already taken: " + phone);
         } else {
             user.getPhones().add(new Phone(phone, user));
@@ -75,7 +76,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePhone(MyUserDetails userDetails, String phoneToReplace, String newPhone) {
         User user = currentUser(userDetails);
-        if(checkPhoneUniq(newPhone)){
+        if(isPhoneUniq(newPhone)){
             throw new IllegalStateException("This phone is already taken: " + newPhone);
         } else {
             List<Phone> updatedPhone = user.getPhones().stream()
@@ -88,13 +89,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deletePhone(MyUserDetails userDetails, String phone) {
         User user = currentUser(userDetails);
-        Phone phoneToRemove = user.getPhones().stream()
-                .filter(p -> p.getPhone().equals(phone))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Phone not found: " + phone));
-        user.getEmails().remove(phoneToRemove);
-        userRepository.save(user);
-
+        if (user.getPhones().size() == 1 ){
+            throw new IllegalStateException("You can't delete the last email.");
+        } else {
+            Phone phoneToRemove = user.getPhones().stream()
+                    .filter(p -> p.getPhone().equals(phone))
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("Phone not found: " + phone));
+            user.getEmails().remove(phoneToRemove);
+            userRepository.save(user);
+        }
     }
 
     private User currentUser(MyUserDetails userDetails){
@@ -103,12 +107,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException(login + " not exist"));
     }
     //todo проверять перед всеми методами кроме delete
-    boolean checkEmailUniq(String email){
+    private boolean isEmailUniq(String email){
         return emailRepository.existsByEmail(email);
     }
-    boolean checkPhoneUniq(String phone){
+    private boolean isPhoneUniq(String phone){
         return phoneRepository.existsByPhone(phone);
     }
-
 
 }
