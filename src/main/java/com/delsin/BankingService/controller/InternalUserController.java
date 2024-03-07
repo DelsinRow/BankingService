@@ -1,10 +1,8 @@
 package com.delsin.BankingService.controller;
 
 import com.delsin.BankingService.auth.AuthenticationResponse;
-import com.delsin.BankingService.auth.RegisterRequest;
 import com.delsin.BankingService.model.dto.UserCreateDTO;
 import com.delsin.BankingService.service.InternalAccountService;
-import com.delsin.BankingService.service.impl.InternalAccountServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

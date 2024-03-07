@@ -50,12 +50,8 @@ public class InternalAccountServiceImpl implements InternalAccountService {
             newUser.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
             newUser.setBirthday(user.getBirthday());
 
-//            Account account = Account.builder()
-//                    .user(newUser)
-//                    .downPayment(user.getDownPayment())
-//                    .balance(user.getDownPayment())
-//                    .build();
-            Account newAccount = new Account(user.getDownPayment());
+            Account newAccount = new Account();
+            newAccount.setDownPayment(user.getDownPayment());
             newAccount.setUser(newUser);
             newAccount.setBalance(user.getDownPayment());
 

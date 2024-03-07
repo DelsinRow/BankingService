@@ -1,5 +1,8 @@
-package com.delsin.BankingService.auth;
+package com.delsin.BankingService.controller;
 
+import com.delsin.BankingService.auth.AuthenticationRequest;
+import com.delsin.BankingService.auth.AuthenticationResponse;
+import com.delsin.BankingService.auth.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,13 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private  final AuthenticationService service;
-
-//    @PostMapping("/register")
-//    public ResponseEntity<AuthenticationResponse> register(
-//            @RequestBody RegisterRequest request
-//    ) {
-//        return ResponseEntity.ok(service.register(request));
-//    }
 
     @PostMapping("/authentication")
     public ResponseEntity<AuthenticationResponse> authenticate(

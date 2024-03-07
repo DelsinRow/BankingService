@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-//@Builder
 @Data
 public class Account {
     @Id
@@ -15,8 +14,8 @@ public class Account {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-    private final BigDecimal downPayment;
+    private BigDecimal downPayment;
     private BigDecimal accruedInterest = BigDecimal.valueOf(0);
+    boolean isActiveDepositIncrease = true;
     private BigDecimal balance;
-
 }
