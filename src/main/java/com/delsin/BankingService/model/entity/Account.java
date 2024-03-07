@@ -1,17 +1,12 @@
-package com.delsin.BankingService.model;
+package com.delsin.BankingService.model.entity;
 
 import java.math.BigDecimal;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import lombok.*;
 
 @Entity
-@Builder
+//@Builder
 @Data
 public class Account {
     @Id
@@ -23,6 +18,5 @@ public class Account {
     private final BigDecimal downPayment;
     private BigDecimal accruedInterest = BigDecimal.valueOf(0);
     private BigDecimal balance;
-
 
 }

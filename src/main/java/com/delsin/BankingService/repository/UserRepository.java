@@ -1,8 +1,7 @@
 package com.delsin.BankingService.repository;
 
-import com.delsin.BankingService.model.User;
+import com.delsin.BankingService.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 

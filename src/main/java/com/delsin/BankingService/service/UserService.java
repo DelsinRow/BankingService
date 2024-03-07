@@ -1,10 +1,6 @@
 package com.delsin.BankingService.service;
 
-import com.delsin.BankingService.model.Account;
-import com.delsin.BankingService.model.User;
 import com.delsin.BankingService.security.MyUserDetails;
-
-import java.time.LocalDate;
 
 public interface UserService {
     void addEmail(MyUserDetails userDetails, String email);

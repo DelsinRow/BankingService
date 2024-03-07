@@ -1,15 +1,13 @@
 package com.delsin.BankingService.service.impl;
 
-import com.delsin.BankingService.exception.ExcessiveInterestRateException;
-import com.delsin.BankingService.model.Account;
-import com.delsin.BankingService.model.User;
+import com.delsin.BankingService.model.entity.Account;
+import com.delsin.BankingService.model.entity.User;
 import com.delsin.BankingService.repository.AccountRepository;
 import com.delsin.BankingService.repository.UserRepository;
 import com.delsin.BankingService.security.MyUserDetails;
 import com.delsin.BankingService.service.AccountService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

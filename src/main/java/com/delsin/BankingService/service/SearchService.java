@@ -1,6 +1,6 @@
 package com.delsin.BankingService.service;
 
-import com.delsin.BankingService.model.User;
+import com.delsin.BankingService.model.entity.User;
 
 import java.time.LocalDate;
 

@@ -1,8 +1,8 @@
 package com.delsin.BankingService.service.impl;
 
-import com.delsin.BankingService.model.Email;
-import com.delsin.BankingService.model.Phone;
-import com.delsin.BankingService.model.User;
+import com.delsin.BankingService.model.entity.Email;
+import com.delsin.BankingService.model.entity.Phone;
+import com.delsin.BankingService.model.entity.User;
 import com.delsin.BankingService.repository.EmailRepository;
 import com.delsin.BankingService.repository.PhoneRepository;
 import com.delsin.BankingService.repository.UserRepository;

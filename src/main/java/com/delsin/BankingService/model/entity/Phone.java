@@ -1,4 +1,4 @@
-package com.delsin.BankingService.model;
+package com.delsin.BankingService.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
