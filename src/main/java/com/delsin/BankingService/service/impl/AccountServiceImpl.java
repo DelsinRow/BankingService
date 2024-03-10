@@ -2,68 +2,88 @@ package com.delsin.BankingService.service.impl;
 
 import com.delsin.BankingService.model.ConstantValues;
 import com.delsin.BankingService.model.entity.Account;
+import com.delsin.BankingService.model.entity.Transaction;
 import com.delsin.BankingService.model.entity.User;
 import com.delsin.BankingService.repository.AccountRepository;
+import com.delsin.BankingService.repository.TransactionRepository;
 import com.delsin.BankingService.repository.UserRepository;
 import com.delsin.BankingService.security.MyUserDetails;
 import com.delsin.BankingService.service.AccountService;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+    private final TransactionRepository transactionRepository;
+    private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     @Override
     @Transactional
     public void moneyTransfer(MyUserDetails userDetails, Long recipientId, BigDecimal amount) {
+        logger.info("The money transfer operation has started");
         String login = userDetails.getUsername();
         User senderUser = userRepository.findByLogin(login)
                 .orElseThrow(() -> new EntityNotFoundException(login + " not exist"));
         Account senderAccount = accountRepository.findByUser(senderUser)
-                .orElseThrow(() -> new EntityNotFoundException(""));
+                .orElseThrow(() -> new EntityNotFoundException("Account by user: " + senderUser.getLogin() + " not found"));
         if (!isEnoughMoney(senderAccount, amount)) {
+            logger.info("Attempt to write off funds when there are insufficient funds in the account");
             throw new IllegalArgumentException("Insufficient funds in the account");
         } else {
             Account recipientAccount = accountRepository.findById(recipientId)
-                    .orElseThrow(() -> new NoSuchElementException("Account with id: " + recipientId + " not found."));
+                    .orElseThrow(() -> new EntityNotFoundException("Account with id:" + recipientId + " not found."));
             senderAccount.setBalance(senderAccount.getBalance().subtract(amount));
             recipientAccount.setBalance(recipientAccount.getBalance().add(amount));
-            //todo создание и сохранение транзакции
+            logger.info("Transaction recording");
+            Transaction transaction = Transaction.builder()
+                    .senderId(senderAccount.getId())
+                    .recipientId(recipientId)
+                    .amount(amount)
+                    .transactionDate(LocalDate.now())
+                    .build();
+
+            transactionRepository.save(transaction);
             accountRepository.save(senderAccount);
             accountRepository.save(recipientAccount);
         }
     }
 
-@Scheduled(fixedRate = 60000)
-public void increaseBalanceOnInterest() {
-    List<Account> accountList = accountRepository.findAll().stream()
-            .filter(Account::isActiveDepositIncrease)
-            .toList();
-    for (Account account : accountList) {
-        if (isEnoughPayments(account)) {
-            account.setActiveDepositIncrease(false);
-        } else {
-            addOneTimePayment(account);
-            account.setAccruedInterest(account
-                    .getAccruedInterest()
-                    .add(OneTimePayment(account))
-            );
+
+    @Override
+    @Scheduled(fixedRate = 60000)
+    public void increaseBalanceOnInterest() {
+        logger.info("Interest accrual");
+        List<Account> accountList = accountRepository.findAll().stream()
+                .filter(Account::isActiveDepositIncrease)
+                .toList();
+        for (Account account : accountList) {
+            if (isEnoughPayments(account)) {
+                account.setActiveDepositIncrease(false);
+            } else {
+                addOneTimePayment(account);
+                //todo исправить - добавляется 5.25
+                account.setAccruedInterest(account
+                        .getAccruedInterest()
+                        .add(OneTimePayment(account))
+                );
+            }
+            accountRepository.save(account);
+            logger.info("Interest accrued");
         }
-        accountRepository.save(account);
     }
-}
 
     private boolean isEnoughPayments(Account account) {
         BigDecimal maxPayout = account
@@ -74,15 +94,18 @@ public void increaseBalanceOnInterest() {
                 .add(OneTimePayment(account));
         return accruedInterestUpd.compareTo(maxPayout) > 0;
     }
+
     private BigDecimal OneTimePayment(Account account) {
         return account.getBalance()
                 .multiply(ConstantValues.INTEREST_ON_BANK_DEPOSIT);
     }
+
     private void addOneTimePayment(Account account) {
         account.setBalance(account
                 .getBalance()
                 .add(OneTimePayment(account)));
     }
+
     private boolean isEnoughMoney(Account account, BigDecimal amount) {
         return account.getBalance().compareTo(amount) >= 0;
     }

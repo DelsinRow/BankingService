@@ -3,6 +3,7 @@ package com.delsin.BankingService.controller;
 import com.delsin.BankingService.auth.AuthenticationResponse;
 import com.delsin.BankingService.model.dto.UserCreateDTO;
 import com.delsin.BankingService.service.InternalAccountService;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/internal")
+@Hidden
 @AllArgsConstructor
 public class InternalUserController {
     private final InternalAccountService service;
@@ -21,7 +23,7 @@ public class InternalUserController {
 //        return "User is saved";
 //    }
 
-    @PostMapping("/new-user")
+    @PostMapping("/add-user")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody UserCreateDTO user) {
         return ResponseEntity.ok(service.addUser(user));
     }

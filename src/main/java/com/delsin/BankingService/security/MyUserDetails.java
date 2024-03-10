@@ -13,10 +13,7 @@ import java.util.Collection;
 public class MyUserDetails implements UserDetails {
 
     private final User user;
-//    public MyUserDetails(User user){
-//        this.user = user;
-//    }
-    //todo Roles
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

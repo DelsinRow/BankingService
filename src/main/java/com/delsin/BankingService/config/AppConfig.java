@@ -1,5 +1,6 @@
 package com.delsin.BankingService.config;
 
+import com.delsin.BankingService.repository.UserRepository;
 import com.delsin.BankingService.service.impl.MyUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @RequiredArgsConstructor
 public class AppConfig {
+    private final UserRepository userRepository;
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -23,7 +25,7 @@ public class AppConfig {
     }
     @Bean
     public UserDetailsService userDetailsService() {
-        return new MyUserDetailService();
+        return new MyUserDetailService(userRepository);
     }
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

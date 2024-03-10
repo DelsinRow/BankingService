@@ -14,6 +14,8 @@ import com.delsin.BankingService.repository.UserRepository;
 import com.delsin.BankingService.security.MyUserDetails;
 import com.delsin.BankingService.service.InternalAccountService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ public class InternalAccountServiceImpl implements InternalAccountService {
 
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     @Override
     //todo @Transactional
@@ -49,19 +52,19 @@ public class InternalAccountServiceImpl implements InternalAccountService {
             newUser.getPhones().add(newPhone);
             newUser.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
             newUser.setBirthday(user.getBirthday());
+            logger.info("New user " + newUser.getLogin() + " created");
 
             Account newAccount = new Account();
             newAccount.setDownPayment(user.getDownPayment());
             newAccount.setUser(newUser);
             newAccount.setBalance(user.getDownPayment());
+            logger.info("New bank account for user " + newUser.getLogin() + " created");
 
             userRepository.save(newUser);
             accountRepository.save(newAccount);
-            emailRepository.save(new Email(user.getEmail(), newUser));
-            phoneRepository.save(new Phone(user.getPhone(), newUser));
 
             UserDetails userDetails = new MyUserDetails(newUser);
-            var jwtToken = jwtService.generateToken(userDetails); //todo проверить userDetails
+            var jwtToken = jwtService.generateToken(userDetails);
             return AuthenticationResponse.builder()
                     .token(jwtToken)
                     .build();

@@ -1,5 +1,7 @@
 package com.delsin.BankingService.service.impl;
 
+import com.delsin.BankingService.model.UserSpecifications;
+import com.delsin.BankingService.model.dto.SearchUserResponse;
 import com.delsin.BankingService.model.entity.Email;
 import com.delsin.BankingService.model.entity.Phone;
 import com.delsin.BankingService.model.entity.User;
@@ -11,10 +13,15 @@ import com.delsin.BankingService.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -22,6 +29,35 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final EmailRepository emailRepository;
     private final PhoneRepository phoneRepository;
+
+
+
+    @Override
+    public Page<SearchUserResponse> searchUsers(LocalDate birthDate, String phone, String name, String email, Pageable pageable) {
+        Specification<User> spec = Specification.where(null);
+
+        if (birthDate != null) {
+            spec = spec.and(UserSpecifications.birthDateAfter(birthDate));
+        }
+        if (phone != null && !phone.isEmpty()) {
+            spec = spec.and(UserSpecifications.phoneEquals(phone));
+        }
+        if (name != null && !name.isEmpty()) {
+            spec = spec.and(UserSpecifications.fullNameLike(name));
+        }
+        if (email != null && !email.isEmpty()) {
+            spec = spec.and(UserSpecifications.emailEquals(email));
+        }
+
+        return userRepository.findAll(spec, pageable)
+                .map(user -> new SearchUserResponse(
+                        user.getLogin(),
+                        user.getFullName(),
+                        user.getEmails().stream().map(Email::getEmail).toList(),
+                        user.getPhones().stream().map(Phone::getPhone).toList(),
+                        user.getBirthday()
+                ));
+    }
 
     @Override
     public void addEmail(MyUserDetails userDetails, String email) {

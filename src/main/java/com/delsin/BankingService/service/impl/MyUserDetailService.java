@@ -3,6 +3,8 @@ package com.delsin.BankingService.service.impl;
 import com.delsin.BankingService.security.MyUserDetails;
 import com.delsin.BankingService.model.entity.User;
 import com.delsin.BankingService.repository.UserRepository;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,8 +15,10 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 @Service
 @RequiredArgsConstructor
+
 public class MyUserDetailService implements UserDetailsService {
-    private UserRepository userRepository;
+
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {

@@ -4,6 +4,8 @@ import com.delsin.BankingService.security.MyUserDetails;
 import com.delsin.BankingService.service.AccountService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +21,8 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 public class AccountController {
 
-    AccountService accountService;
+    private final AccountService accountService;
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @PostMapping("/money-transfer")
     public ResponseEntity<?> transferMoney(@AuthenticationPrincipal MyUserDetails userDetails,
