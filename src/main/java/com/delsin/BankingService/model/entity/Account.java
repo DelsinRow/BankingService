@@ -1,12 +1,9 @@
 package com.delsin.BankingService.model.entity;
 
-import java.math.BigDecimal;
-
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 @Entity
 @Data
@@ -19,8 +16,6 @@ public class Account {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @NotNull(message = "Down payment cannot be 0")
-    @DecimalMin(value = "0.01", message = "The down payment must be greater than 0")
     private BigDecimal downPayment;
     private BigDecimal accruedInterest = BigDecimal.valueOf(0);
     private BigDecimal balance;

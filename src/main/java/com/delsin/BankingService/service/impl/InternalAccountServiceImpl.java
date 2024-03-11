@@ -2,11 +2,11 @@ package com.delsin.BankingService.service.impl;
 
 import com.delsin.BankingService.auth.AuthenticationResponse;
 import com.delsin.BankingService.auth.jwt.JwtService;
+import com.delsin.BankingService.model.dto.UserCreateDTO;
 import com.delsin.BankingService.model.entity.Account;
 import com.delsin.BankingService.model.entity.Email;
 import com.delsin.BankingService.model.entity.Phone;
 import com.delsin.BankingService.model.entity.User;
-import com.delsin.BankingService.model.dto.UserCreateDTO;
 import com.delsin.BankingService.repository.AccountRepository;
 import com.delsin.BankingService.repository.EmailRepository;
 import com.delsin.BankingService.repository.PhoneRepository;
@@ -52,13 +52,13 @@ public class InternalAccountServiceImpl implements InternalAccountService {
             newUser.getPhones().add(newPhone);
             newUser.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
             newUser.setBirthday(user.getBirthday());
-            logger.info("New user " + newUser.getLogin() + " created");
+            logger.info("New user with login:" + newUser.getLogin() + " created");
 
             Account newAccount = new Account();
             newAccount.setDownPayment(user.getDownPayment());
             newAccount.setUser(newUser);
             newAccount.setBalance(user.getDownPayment());
-            logger.info("New bank account for user " + newUser.getLogin() + " created");
+            logger.info("New bank account for user:" + newUser.getLogin() + " created");
 
             userRepository.save(newUser);
             accountRepository.save(newAccount);

@@ -12,7 +12,6 @@ import com.delsin.BankingService.security.MyUserDetails;
 import com.delsin.BankingService.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,7 +28,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final EmailRepository emailRepository;
     private final PhoneRepository phoneRepository;
-
 
 
     @Override
@@ -62,7 +60,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addEmail(MyUserDetails userDetails, String email) {
         User user = currentUser(userDetails);
-        if(isEmailUniq(email)){
+        if (isEmailNotUniq(email)) {
             throw new IllegalStateException("This email is already taken: " + email);
         } else {
             user.getEmails().add(new Email(email, user));
@@ -73,12 +71,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateEmail(MyUserDetails userDetails, String emailToReplace, String newEmail) {
         User user = currentUser(userDetails);
-        if(isEmailUniq(newEmail)){
+        if (isEmailNotUniq(newEmail)) {
             throw new IllegalStateException("This email is already taken: " + newEmail);
         } else {
             List<Email> updatedEmails = user.getEmails().stream()
                     .map(email -> email.getEmail().equals(emailToReplace) ? new Email(newEmail, user) : email)
-                    .toList();
+                    .collect(Collectors.toList());
+            user.getEmails().clear();
+            user.getEmails().addAll(updatedEmails);
+
             userRepository.save(user);
         }
     }
@@ -86,7 +87,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteEmail(MyUserDetails userDetails, String email) {
         User user = currentUser(userDetails);
-        if (user.getEmails().size() == 1 ){
+        if (user.getEmails().size() == 1) {
             throw new IllegalStateException("You can't delete the last email.");
         } else {
             Email emailToRemove = user.getEmails().stream()
@@ -101,7 +102,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addPhone(MyUserDetails userDetails, String phone) {
         User user = currentUser(userDetails);
-        if(isPhoneUniq(phone)){
+        if (isPhoneNotUniq(phone)) {
             throw new IllegalStateException("This phone is already taken: " + phone);
         } else {
             user.getPhones().add(new Phone(phone, user));
@@ -112,12 +113,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePhone(MyUserDetails userDetails, String phoneToReplace, String newPhone) {
         User user = currentUser(userDetails);
-        if(isPhoneUniq(newPhone)){
+        if (isPhoneNotUniq(newPhone)) {
             throw new IllegalStateException("This phone is already taken: " + newPhone);
         } else {
             List<Phone> updatedPhone = user.getPhones().stream()
                     .map(email -> email.getPhone().equals(phoneToReplace) ? new Phone(newPhone, user) : email)
-                    .toList();
+                    .collect(Collectors.toList());
+            user.getPhones().clear();
+            user.getPhones().addAll(updatedPhone);
+
             userRepository.save(user);
         }
     }
@@ -125,8 +129,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deletePhone(MyUserDetails userDetails, String phone) {
         User user = currentUser(userDetails);
-        if (user.getPhones().size() == 1 ){
-            throw new IllegalStateException("You can't delete the last email.");
+        if (user.getPhones().size() == 1) {
+            throw new IllegalStateException("You can't delete the last phone.");
         } else {
             Phone phoneToRemove = user.getPhones().stream()
                     .filter(p -> p.getPhone().equals(phone))
@@ -137,16 +141,18 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private User currentUser(MyUserDetails userDetails){
+    private User currentUser(MyUserDetails userDetails) {
         String login = userDetails.getUsername();
         return userRepository.findByLogin(login)
                 .orElseThrow(() -> new EntityNotFoundException(login + " not exist"));
     }
+
     //todo проверять перед всеми методами кроме delete
-    private boolean isEmailUniq(String email){
+    private boolean isEmailNotUniq(String email) {
         return emailRepository.existsByEmail(email);
     }
-    private boolean isPhoneUniq(String phone){
+
+    private boolean isPhoneNotUniq(String phone) {
         return phoneRepository.existsByPhone(phone);
     }
 

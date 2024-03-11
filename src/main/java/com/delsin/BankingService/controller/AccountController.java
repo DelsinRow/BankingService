@@ -28,6 +28,7 @@ public class AccountController {
     public ResponseEntity<?> transferMoney(@AuthenticationPrincipal MyUserDetails userDetails,
                                            @RequestParam Long recipientId,
                                            @RequestParam BigDecimal amount) {
+        logger.info("Processing POST-request to /api/v1/accounts/money-transfer");
         try {
             accountService.moneyTransfer(userDetails, recipientId, amount);
             return ResponseEntity.ok().body("Transfer successful");

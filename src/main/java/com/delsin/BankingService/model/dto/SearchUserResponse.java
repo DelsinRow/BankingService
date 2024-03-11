@@ -15,6 +15,4 @@ public class SearchUserResponse {
     private List<String> phone;
     private LocalDate birthday;
 
-
-
 }

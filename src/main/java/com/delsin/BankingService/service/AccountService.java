@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 public interface AccountService {
 
     void moneyTransfer(MyUserDetails userDetails, Long recipientId, BigDecimal amount);
+
     void increaseBalanceOnInterest();
 
 }

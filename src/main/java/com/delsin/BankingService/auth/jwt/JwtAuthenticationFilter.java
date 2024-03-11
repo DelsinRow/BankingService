@@ -3,6 +3,7 @@ package com.delsin.BankingService.auth.jwt;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import jakarta.servlet.ServletException;
+
 import java.io.IOException;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")){
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }

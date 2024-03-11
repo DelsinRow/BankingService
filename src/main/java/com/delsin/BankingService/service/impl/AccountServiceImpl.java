@@ -33,21 +33,21 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public void moneyTransfer(MyUserDetails userDetails, Long recipientId, BigDecimal amount) {
-        logger.info("The money transfer operation has started");
+        logger.info("Transaction has started");
         String login = userDetails.getUsername();
         User senderUser = userRepository.findByLogin(login)
                 .orElseThrow(() -> new EntityNotFoundException(login + " not exist"));
         Account senderAccount = accountRepository.findByUser(senderUser)
                 .orElseThrow(() -> new EntityNotFoundException("Account by user: " + senderUser.getLogin() + " not found"));
         if (!isEnoughMoney(senderAccount, amount)) {
-            logger.info("Attempt to write off funds when there are insufficient funds in the account");
+            logger.info("Transaction failed. Not enough money in the account ID: " + senderAccount.getId());
             throw new IllegalArgumentException("Insufficient funds in the account");
         } else {
             Account recipientAccount = accountRepository.findById(recipientId)
                     .orElseThrow(() -> new EntityNotFoundException("Account with id:" + recipientId + " not found."));
             senderAccount.setBalance(senderAccount.getBalance().subtract(amount));
             recipientAccount.setBalance(recipientAccount.getBalance().add(amount));
-            logger.info("Transaction recording");
+            logger.info("Transaction recording. ID: " + senderAccount.getId() + " -> " + recipientAccount.getId());
             Transaction transaction = Transaction.builder()
                     .senderId(senderAccount.getId())
                     .recipientId(recipientId)
@@ -58,6 +58,7 @@ public class AccountServiceImpl implements AccountService {
             transactionRepository.save(transaction);
             accountRepository.save(senderAccount);
             accountRepository.save(recipientAccount);
+            logger.info("Transaction completed. ID: " + senderAccount.getId() + " -> " + recipientAccount.getId() + ". Amount: " + amount);
         }
     }
 
@@ -73,12 +74,11 @@ public class AccountServiceImpl implements AccountService {
             if (isEnoughPayments(account)) {
                 account.setActiveDepositIncrease(false);
             } else {
-                addOneTimePayment(account);
-                //todo исправить - добавляется 5.25
                 account.setAccruedInterest(account
                         .getAccruedInterest()
                         .add(OneTimePayment(account))
                 );
+                addOneTimePayment(account);
             }
             accountRepository.save(account);
             logger.info("Interest accrued");
