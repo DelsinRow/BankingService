@@ -1,23 +1,25 @@
-package com.delsin.BankingService.model;
+package com.delsin.BankingService.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-public class Phone {
+@NoArgsConstructor
+public class Email {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String phone;
+    private String email;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Phone(String phone, User user) {
-        this.phone = phone;
+    public Email(String email, User user) {
+        this.email = email;
         this.user = user;
     }
 }

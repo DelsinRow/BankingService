@@ -1,17 +1,17 @@
-package com.delsin.BankingService.config;
+package com.delsin.BankingService.security;
 
-import com.delsin.BankingService.model.User;
+import com.delsin.BankingService.model.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+@RequiredArgsConstructor
 public class MyUserDetails implements UserDetails {
-    private User user;
-    public MyUserDetails(User user){
-        this.user = user;
-    }
-    //todo Roles
+
+    private final User user;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

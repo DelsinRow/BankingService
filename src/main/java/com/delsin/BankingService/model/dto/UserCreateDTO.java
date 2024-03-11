@@ -2,6 +2,10 @@ package com.delsin.BankingService.model.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -13,6 +17,6 @@ public class UserCreateDTO {
     private String userPassword;
     private String phone;
     private LocalDate birthday;
-    private BigDecimal balance;
+    private BigDecimal downPayment;
 
 }
